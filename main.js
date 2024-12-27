@@ -1,29 +1,29 @@
-document.addEventListener("DOMcontentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
   const BOOKS_KEY = "bookbox";
   const titleInput = document.getElementById("bookFormTitle");
   const authorInput = document.getElementById("bookFormAuthor");
   const yearInput = document.getElementById("bookFormYear");
   const isComplateInput = document.getElementById("bookFormIsComplete");
-  const addNewBook = document.getElementById("bookForm");
-  const findBook = document.getElementById("searchBook");
+  const addNewBook = document.getElementById("tambah");
+  const findBook = document.getElementById("searchBookTitle");
   const buttonSearch = document.getElementById("searchSubmit");
   const doneBook = document.getElementById("completeBookList");
-  const notyetBook = document.getElementById("incompleteBookList");
+  const notyetBook = document.getElementById("uncompleteBookList");
 
   //penyimpanan local
-  function saveBooksLocalStorage(books) {
+  function saveBooksToLocalStorage(books) {
     localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
   }
 
   //pengambilan buku di penyimpanan local
-  function loadBooksLocalStorage() {
+  function loadBooksFormLocalStorage() {
     const databooks = localStorage.getItem(BOOKS_KEY);
     return databooks ? JSON.parse(databooks) : [];
   }
 
   //update rak buku
   function updateBookBox() {
-    const books = loadBooksLocalStorage();
+    const books = loadBooksFormLocalStorage();
     doneBook.innerHTML = "";
     notyetBook.innerHTML = "";
 
@@ -49,7 +49,7 @@ document.addEventListener("DOMcontentLoaded", function () {
       const moveBotton = listbookItem.querySelector(".move-botton");
       moveBotton.addEventListener("click", () => {
         book.bookFormIsComplete = !book.bookFormIsComplete;
-        saveBooksLocalStorage(books);
+        saveBooksToLocalStorage(books);
         updateBookBox();
       });
 
@@ -58,7 +58,7 @@ document.addEventListener("DOMcontentLoaded", function () {
         const bookIndex = books.findIndex((b) => b.id === book.id);
         if (bookIndex !== -1) {
           books.splice(bookIndex, 1);
-          saveBooksLocalStorage(books);
+          saveBooksToLocalStorage(books);
           updateBookBox();
         }
       });
@@ -71,16 +71,14 @@ document.addEventListener("DOMcontentLoaded", function () {
     });
   }
 
-  addNewBook.addEventListener("submit", (Event) => {
-    Event.preventDefault();
-
+  addNewBook.addEventListener("click", () => {
     const bookFormTitle = titleInput.value;
-    const bookFormAuthor = authorInput.values;
-    const bookFormYear = yearInput.values;
-    const bookFormIsComplete = isComplateInput.values;
+    const bookFormAuthor = authorInput.value;
+    const bookFormYear = parseInt(yearInput.value);
+    const bookFormIsComplete = isComplateInput.checked;
 
     if (bookFormTitle && bookFormAuthor && bookFormYear) {
-      const books = loadBooksLocalStorage();
+      const books = loadBooksFormLocalStorage();
       const newBook = {
         id: +new Date(),
         bookFormTitle,
@@ -90,12 +88,12 @@ document.addEventListener("DOMcontentLoaded", function () {
       };
 
       books.push(newBook);
-      saveBooksLocalStorage(books);
+      saveBooksToLocalStorage(books);
 
       titleInput.value = "";
       authorInput.value = "";
       yearInput.value = "";
-      isComplateInput.checked = "";
+      isComplateInput.checked = false;
 
       updateBookBox();
     }
@@ -103,6 +101,7 @@ document.addEventListener("DOMcontentLoaded", function () {
 
   buttonSearch.addEventListener("click", () => {
     const searchTerm = findBook.value.toLowerCase();
+    const books = loadBooksFormLocalStorage();
     doneBook.innerHTML = "";
     notyetBook.innerHTML = "";
 
@@ -138,7 +137,7 @@ document.addEventListener("DOMcontentLoaded", function () {
         const moveBotton = listbookItem.querySelector(".move-botton");
         moveBotton.addEventListener("click", () => {
           book.bookFormIsComplete = !book.bookFormIsComplete;
-          saveBooksLocalStorage(books);
+          saveBooksToLocalStorage(books);
           updateBookBox();
         });
 
@@ -147,7 +146,7 @@ document.addEventListener("DOMcontentLoaded", function () {
           const bookIndex = books.findIndex((b) => b.id === book.id);
           if (bookIndex !== -1) {
             books.splice(bookIndex, 1);
-            saveBooksLocalStorage(books);
+            saveBooksToLocalStorage(books);
             updateBookBox();
           }
         });
@@ -159,7 +158,6 @@ document.addEventListener("DOMcontentLoaded", function () {
         }
       }
     });
-
   });
 
   updateBookBox();
